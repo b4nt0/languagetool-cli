@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import { Agent } from "https";
 import fetch, { RequestInit, Response } from "node-fetch";
-import { LoadFileResponse } from "./types.js";
+import { LoadFileResponse, ProgramOptions } from "./types.js";
 
 let version: string;
 
@@ -56,11 +56,11 @@ export async function loadCustomDict(filePath?: string): Promise<string[]> {
   return [];
 }
 
-export function createFetchRequest(item: LoadFileResponse): Promise<Response> {
+export function createFetchRequest(item: LoadFileResponse, opts: ProgramOptions): Promise<Response> {
   const params = {
     data: JSON.stringify(item.annotatedText),
-    language: "en-US",
-    motherTongue: "en-US",
+    language: opts.lang,
+    motherTongue: opts.motherLang,
     disabledRules: "WHITESPACE_RULE,CONSECUTIVE_SPACES",
   };
 

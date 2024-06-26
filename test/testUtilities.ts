@@ -85,9 +85,8 @@ export async function getFakeResult(): Promise<FakeResult> {
 
   const fakeOptions = {
     _: ["README.md"],
-    githubpr: "",
-    "pr-diff-only": false,
-    "max-pr-suggestions": 5,
+    "lang": "en-US",
+    "motherLang": "en-US",
     "max-replacements": 5,
     "custom-dict-file": "",
   };

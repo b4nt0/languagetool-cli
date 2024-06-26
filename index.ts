@@ -13,28 +13,23 @@ import {
   FileWithDiffInfo,
 } from "./lib/types.js";
 import { convertMarkdownToAnnotated } from "./lib/markdownToAnnotated.js";
-import { getFilesFromPr } from "./lib/githubReporter.js";
 
 const parser = yargs(hideBin(process.argv))
   .usage("Usage: $0 [options] [<file1> <file2> ... <fileN>]")
   .options({
-    githubpr: {
+    "lang": {
       type: "string",
-      default: "",
+      default: "en-US",
       nargs: 1,
       describe:
-        "URL to a GitHub PR to add comments to. Requires GITHUB_TOKEN environment variable.",
+        "Language to check the grammar in.",
     },
-    "pr-diff-only": {
-      type: "boolean",
-      default: false,
-      describe: "Only report issues on lines that are part of the PR's diff.",
-    },
-    "max-pr-suggestions": {
-      type: "number",
-      default: 5,
+    "mother-lang": {
+      type: "string",
+      default: "en-US",
+      nargs: 1,
       describe:
-        "Maximum number of PR suggestion comments to add to a PR. (Too many gets unwieldy.)",
+        "Language that you speak.",
     },
     "custom-dict-file": {
       type: "string",
@@ -43,7 +38,7 @@ const parser = yargs(hideBin(process.argv))
     },
     "max-replacements": {
       type: "number",
-      default: 5,
+      default: 2,
       describe:
         "Maximum number of replacements to suggest for a grammar/spelling error.",
     },
@@ -62,19 +57,19 @@ async function run() {
   options.customDict = await loadCustomDict(options["custom-dict-file"]);
 
   let filePathsToCheck: Array<string | FileWithDiffInfo> = options._;
-  if (options.githubpr) {
-    filePathsToCheck = [
-      ...filePathsToCheck,
-      ...(await getFilesFromPr(options.githubpr)),
-    ];
-  }
   const files = await loadFiles(filePathsToCheck);
   const annotatedItems = files.map((file) => ({
     ...file,
     annotatedText: convertMarkdownToAnnotated(file.contents),
   }));
 
-  const responses = await Promise.all(annotatedItems.map(createFetchRequest));
+  let promises = [];
+
+  for (let item of annotatedItems) {
+    promises.push(createFetchRequest(item, options));
+  }
+
+  const responses = await Promise.all(promises);
   const results = await Promise.all(responses.map((r) => r.json()));
   const correlatedResults: LanguageToolResult[] = results.map((r: any, i) => {
     return {
@@ -83,7 +78,7 @@ async function run() {
     };
   });
 
-  const reporter = options.githubpr ? reporters.githubpr : reporters.markdown;
+  const reporter = reporters.markdown;
   const stats = new ReportStats();
 
   for (const result of correlatedResults) {

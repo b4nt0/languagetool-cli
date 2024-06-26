@@ -1,11 +1,9 @@
 import { location } from "vfile-location";
 import { ProgramOptions, LanguageToolResult, ReportStats } from "./types.js";
-import { githubReporter } from "./githubReporter.js";
 import { markdownReporter } from "./markdownReporter.js";
 
 export const reporters = {
-  markdown: markdownReporter,
-  githubpr: githubReporter,
+  markdown: markdownReporter
 };
 
 export async function generateReport(

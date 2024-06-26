@@ -1,9 +1,8 @@
 export interface ProgramOptions {
   _: string[];
-  githubpr: string;
-  "pr-diff-only": boolean;
+  lang: string;
+  motherLang: string;
   "custom-dict-file": string;
-  "max-pr-suggestions": number;
   "max-replacements": number;
   customDict?: string[];
 }
