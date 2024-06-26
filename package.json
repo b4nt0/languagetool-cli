@@ -1,6 +1,6 @@
 {
-  "name": "@twilio-labs/languagetool-cli",
-  "version": "1.5.0",
+  "name": "@b4nt0/languagetool-cli",
+  "version": "1.5.1",
   "description": "Run LanguageTool for linting Markdown files during CI",
   "keywords": [
     "languagetool",
