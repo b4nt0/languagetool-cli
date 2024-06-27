@@ -25,6 +25,7 @@
   ],
   "scripts": {
     "build": "tsc && echo \"#!/usr/bin/env node\" >./dist/run.js && cat ./dist/index.js >>./dist/run.js && chmod +x ./dist/run.js",
+    "prepare": "npm run build",
     "prepack": "yarn build",
     "test": "c8 ts-node-esm node_modules/uvu/bin.js test"
   },
